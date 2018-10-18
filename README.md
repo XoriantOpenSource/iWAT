@@ -26,12 +26,13 @@ To Run the tests you need to first install and configure the tool correctly. Ple
 
  1. No support for HTTP methods like HEAD, OPTIONS
  2. No support for Cookie-based authentication
- 3. No OAuth support yet
- 4. Parallel execution of tests 
- 5. Complex path queries for JSON and XML (simple tests on fields)
- 6. Full support for multipart/form-data
- 7. Support for XPath and JsonPath expressions
- 8. Html Report Generation
+ 3. No OAuth support yet for soap.
+ 4. Currently only SOAP 1.2 is supported.
+ 5. Parallel execution of tests 
+ 6. Complex path queries for JSON and XML (simple tests on fields)
+ 7. Full support for multipart/form-data
+ 8. Support for XPath and JsonPath expressions
+ 9. Html Report Generation
  
 ## Prerequisite:
 
@@ -93,9 +94,12 @@ Detailed explanation of configuration parameters are as follows:
 
 ##  Parameters of config.properties:
 
-soapUrl(soapUrlXml) =  Application URL against which tests is to be run for SOAP Tests
-restUrl(soapUrlJson) =  Application URL against which tests is to be run for REST Tests
+soapUrl =  Application URL against which tests is to be run for SOAP Tests
+restUrl =  Application URL against which tests is to be run for REST Tests
 soapActionUrl = If you have soapAction Url then fine else leave it blank
+workspace = Provide Path of your workspace 
+
+**NOTE- Only add your workspace path in the above variable and no where else.Everywhere else the workspace will automatically will be concatinated.
 
 ------------------------------------**To Make Choice**----------------------------
 
