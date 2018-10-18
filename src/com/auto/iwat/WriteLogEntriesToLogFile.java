@@ -1,6 +1,7 @@
 package com.auto.iwat;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.ConsoleHandler;
@@ -14,6 +15,11 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.DailyRollingFileAppender;
 
+/**
+ * @author Indroneel Sengupta & Ketan Tank
+ * {@code This is the class which handles all the logger properties}
+*/
+
 public class WriteLogEntriesToLogFile {
 	
 	static { System.setProperty("java.util.logging.SimpleFormatter.format",
@@ -22,6 +28,13 @@ public class WriteLogEntriesToLogFile {
 
 	public static Logger WriteLogEntriesToLogFile(String logFilePath,int i) throws Exception {
 		Properties props = PropertyFile.propertyFile();
+		
+		File restLog = new File(props.getProperty("logFileJson"));
+		File soapLog = new File(props.getProperty("logFileXML"));
+        if (!restLog.exists()) {
+            restLog.mkdirs();
+            soapLog.mkdir();            
+        }		
 		
 		 // creates pattern layout
         PatternLayout layout = new PatternLayout();

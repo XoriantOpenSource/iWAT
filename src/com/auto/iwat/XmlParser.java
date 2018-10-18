@@ -107,7 +107,7 @@ public class XmlParser {
 					cnt = 1;
 					if (keyValue[i][3] != null && keyValue[i][4] != null) {
 						if (keyValue[i][3].equals("Yes")) {
-							String logPath = (props.getProperty("logFileJson") + "TC_" + keyValue[i][0] +"_"+startTime.toGMTString().replace(':', '-')
+							String logPath = (props.getProperty("logFileXML") + "TC_" + keyValue[i][0] +"_"+startTime.toGMTString().replace(':', '-')
 									+ ".log");
 							logger = WriteLogEntriesToLogFile.WriteLogEntriesToLogFile(logPath, i);
 							Set<Object> keys = mandatoryProp.keySet();
