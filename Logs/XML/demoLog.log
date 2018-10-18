@@ -1,0 +1,57 @@
+[2018-10-18 15:23:55] [INFO   ] 
+  Connecting to server, please wait......... 
+ 
+[2018-10-18 15:23:56] [INFO   ]  * Path-1= $.name
+ * Data = John 
+[2018-10-18 15:23:56] [INFO   ]  * Path-2= $.job
+ * Data = dev 
+[2018-10-18 15:23:56] [INFO   ]  * URL = https://reqres.in/api/users/2 
+[2018-10-18 15:23:58] [INFO   ] 
+
+		Find the Response Below
+{
+  "name" : "John",
+  "job" : "dev",
+  "updatedAt" : "2018-10-18T09:56:36.299Z"
+}
+
+ 
+[2018-10-18 15:23:59] [INFO   ]  * Test case 1_1 Executed successfully with Http Response  200 And Successful Response outbound fetched 
+ ****************************************************************** 
+ 
+[2018-10-18 15:24:00] [INFO   ]  * Path-1= $.name
+ * Data = Kevin 
+[2018-10-18 15:24:00] [INFO   ]  * Path-2= $.job
+ * Data = DevOps 
+[2018-10-18 15:24:00] [INFO   ]  * URL = https://reqres.in/api/users/2 
+[2018-10-18 15:24:00] [INFO   ] 
+
+		Find the Response Below
+{
+  "name" : "Kevin",
+  "job" : "DevOps",
+  "updatedAt" : "2018-10-18T09:56:38.091Z"
+}
+
+ 
+[2018-10-18 15:24:01] [INFO   ]  * Test case 1_2 Executed successfully with Http Response  200 And Successful Response outbound fetched 
+ ****************************************************************** 
+ 
+[2018-10-18 15:24:01] [INFO   ]  * Path-1= $.name
+ * Data = Stark 
+[2018-10-18 15:24:01] [INFO   ]  * Path-2= $.job
+ * Data = test 
+[2018-10-18 15:24:01] [INFO   ]  * URL = https://reqres.in/api/users/2 
+[2018-10-18 15:24:01] [INFO   ] 
+
+		Find the Response Below
+{
+  "name" : "Stark",
+  "job" : "test",
+  "updatedAt" : "2018-10-18T09:56:39.252Z"
+}
+
+ 
+[2018-10-18 15:24:02] [INFO   ]  * Test case 1_3 Executed successfully with Http Response  200 And Successful Response outbound fetched 
+ ****************************************************************** 
+ 
