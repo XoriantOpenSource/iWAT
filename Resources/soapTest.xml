@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soap:Envelope
+    xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <tns:CountryName
+            xmlns:tns="http://www.oorsprong.org/websamples.countryinfo">
+            <!-- Element must appear exactly once -->
+            <tns:sCountryISOCode>USA</tns:sCountryISOCode>
+        </tns:CountryName>
+    </soap:Body>
+</soap:Envelope>

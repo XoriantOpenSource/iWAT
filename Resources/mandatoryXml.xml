@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<soap12:Envelope xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+<soap12:Body>
+<tns:CountryName xmlns:tns="http://www.oorsprong.org/websamples.countryinfo">
+<!-- Element must appear exactly once -->
+<tns:sCountryISOCode>abc</tns:sCountryISOCode>
+</tns:CountryName>
+</soap12:Body>
+</soap12:Envelope>
