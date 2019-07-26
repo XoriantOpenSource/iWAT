@@ -5,6 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * @author Indroneel Sengupta & Ketan Tank
+ * {@code This is the class which handles all the property files of the application	}
+*/
 public class PropertyFile {
 	public static Properties propertyFile() throws Exception {
 		File configFile = new File(iWATEngine.configPath+"\\"+"config.properties");
