@@ -172,13 +172,15 @@ public class HttpHandler {
 	 * @param message The request data to be sent to the server (Eg: Json Content)
 	 * @param httpClient DefaultHttpClient Object
 	 * @return Returns Hashmap<Integer,String> with reponse code and response data
-	 * @throws IOException
-	 * @throws IllegalStateException
-	 * @throws UnsupportedEncodingException
-	 * @throws RuntimeException
+	 * @throws Exception 
 	 */
-	 public static HashMap<Integer,String> postToURL(String url, String message, DefaultHttpClient httpClient,String authToken) throws IOException, IllegalStateException, UnsupportedEncodingException, RuntimeException {
-	              
+	 public static HashMap<Integer,String> postToURL(String url, String message, DefaultHttpClient httpClient,String authToken) throws Exception {
+		  	Properties props = PropertyFile.propertyFile();
+		 	String authTokenUrl = props.getProperty("authTokenUrl");
+		 	String username = props.getProperty("username");
+		 	String password = props.getProperty("password");
+		 	String tenant = props.getProperty("tenant");
+		 
 		 	HttpPost postRequest = new HttpPost(url);
 	        HashMap<Integer,String> responseData = new HashMap<>();
 	        StringEntity input = new StringEntity(message);
@@ -191,7 +193,7 @@ public class HttpHandler {
 	        	System.out.println(" * Is Authorised  = No");
 	        }else {
 	        	System.out.println(" * Is Authorised  = Yes");
-	        	HttpAuthorization.httpAuthoriazation(postRequest, authToken);
+	        	HttpAuthorization.httpAuthoriazation(postRequest, AuthTokenFetcher.authTokenFetcher(authTokenUrl, username, password,tenant));
 	        }
 	 
 	        HttpResponse response = httpClient.execute(postRequest);

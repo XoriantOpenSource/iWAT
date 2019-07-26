@@ -1,4 +1,5 @@
 package com.auto.iwat;
+
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.BufferedReader;
@@ -44,9 +45,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import java.util.logging.FileHandler;	
+import java.util.logging.FileHandler;
 import java.util.logging.Logger;
-
 
 public class XmlParser {
 	public void xmlParser() throws Exception {
@@ -56,10 +56,11 @@ public class XmlParser {
 		XpathTest xPathTestObj = new XpathTest();
 		HttpHandler sendReqObj = new HttpHandler();
 
-		Logger logger = WriteLogEntriesToLogFile.WriteLogEntriesToLogFile(props.getProperty("logFileXML")+"xmlLog"+".log",1);
-		
+		Logger logger = WriteLogEntriesToLogFile
+				.WriteLogEntriesToLogFile(props.getProperty("logFileXML") + "xmlLog" + ".log", 1);
+
 		String[][] keyValue = xPathTestObj.getPath(props.getProperty("xPathXml"));
-		
+
 		int rowCount = keyValue.length;
 		int colCount = keyValue[1].length;
 		int cnt = 0;
@@ -69,6 +70,7 @@ public class XmlParser {
 		DocumentBuilder builder;
 		Document doc = null;
 		Document docTemp = null;
+		Document docFetch = null;
 		try {
 			builder = factory.newDocumentBuilder();
 			doc = builder.parse(props.getProperty("actualXml"));
@@ -78,10 +80,9 @@ public class XmlParser {
 			// Create XPath object
 			XPath xpath = xpathFactory.newInstance().newXPath();
 
-			
-			UniversalNamespaceCache setNamespace = new UniversalNamespaceCache(doc,false);
+			UniversalNamespaceCache setNamespace = new UniversalNamespaceCache(doc, false);
 			xpath.setNamespaceContext(setNamespace);
-			
+
 			boolean flag = true;
 			XpathTest setCelVal = new XpathTest();
 			String name = "";
@@ -91,14 +92,14 @@ public class XmlParser {
 			String resCode = "";
 			String resMsg = "";
 			int size = 0;
-			String fileType = "application/soap+xml";
-			//String fileType = "text/xml";
+			//String fileType = "application/soap+xml";
+			String fileType = "text/xml";
 //			int select = 0;
 //			Scanner scan = new Scanner(System.in);
 //			System.out.println(
-//					"\n Please select from the below options : \n 1 --> To run each xPath as seperate Test Case \n 2 --> To run all xPath as single Test Case \n");
+//					"\n Please select from the below options : \n 1 --> To run each xPath as separate Test Case \n 2 --> To run all xPath as single Test Case \n");
 //			select = scan.nextInt();
-			
+
 			int select = Integer.parseInt(props.getProperty("testType"));
 			switch (select) {
 			case 1: {
@@ -107,8 +108,8 @@ public class XmlParser {
 					cnt = 1;
 					if (keyValue[i][3] != null && keyValue[i][4] != null) {
 						if (keyValue[i][3].equals("Yes")) {
-							String logPath = (props.getProperty("logFileXML") + "TC_" + keyValue[i][0] +"_"+startTime.toGMTString().replace(':', '-')
-									+ ".log");
+							String logPath = (props.getProperty("logFileXML") + "TC_" + keyValue[i][0] + "_"
+									+ startTime.toGMTString().replace(':', '-') + ".log");
 							logger = WriteLogEntriesToLogFile.WriteLogEntriesToLogFile(logPath, i);
 							Set<Object> keys = mandatoryProp.keySet();
 							if (keys.size() > 0) {
@@ -121,7 +122,7 @@ public class XmlParser {
 									getXpathResult(doc, xpath, mandatoryProp.getProperty(key), ranStr, keyValue[i][0],
 											props.getProperty("tempMandatoryXml"));
 								}
-							}else {
+							} else {
 								FileSystem system = FileSystems.getDefault();
 								Path original = system.getPath(props.getProperty("actualXml"));
 								Path target = system.getPath(props.getProperty("tempMandatoryXml"));
@@ -151,16 +152,33 @@ public class XmlParser {
 							}
 
 							if ((resCode).equals(keyValue[i][6].toString())) {
-
-								XpathTest.setCellValue(i, 7, resCode, props.getProperty("xPathXml"));
-								XpathTest.setCellValue(i, 9, resMsg, props.getProperty("xPathXml"));
-								XpathTest.setCellValue(i, 10, "Pass", props.getProperty("xPathXml"));
-								System.out.println(" * Test case " + keyValue[i][0]
-										+ " Executed successfully with Response  " + resCode + " " + resMsg
-										+ "\n ****************************************************************** \n");
-								logger.info(" * Test case " + keyValue[i][0]
-										+ " Executed successfully with Response  " + resCode + " " + resMsg
-										+ "\n ****************************************************************** \n");
+								docFetch = builder.parse(props.getProperty("responseXml") + "testResponse_" + keyValue[i][0] + ".xml");
+								if (keyValue[i][9].equalsIgnoreCase(getXpathResponse(docTemp, xpath, keyValue[i][8]))) {
+									XpathTest.setCellValue(i, 7, resCode, props.getProperty("xPathXml"));
+									XpathTest.setCellValue(i, 10, keyValue[i][9], props.getProperty("xPathXml"));
+									XpathTest.setCellValue(i, 11, "Pass", props.getProperty("xPathXml"));
+									System.out.println(" * Test case " + keyValue[i][0]
+											+ " Executed successfully with Response  " + resCode + " " + resMsg
+											+ " And Successful Response outbound fetched "
+											+ "\n ****************************************************************** \n");
+									logger.info(" * Test case " + keyValue[i][0]
+											+ " Executed successfully with Response  " + resCode + " " + resMsg
+											+ " And Successful Response outbound fetched "
+											+ "\n ****************************************************************** \n");
+								}else {
+									XpathTest.setCellValue(i, 7, resCode, props.getProperty("xPathXml"));
+									//XpathTest.setCellValue(i, 10, getXpathResponse(docTemp, xpath, keyValue[i][8]), props.getProperty("xPathXml"));
+									XpathTest.setCellValue(i, 11, "Fail", props.getProperty("xPathXml"));
+									System.out.println(" * Test case " + keyValue[i][0]
+											+ " Executed successfully with Response  " + resCode + " " + resMsg
+											+ " But was unsuccessful to fetch the response outbound"
+											+ "\n ****************************************************************** \n");
+									logger.info(" * Test case " + keyValue[i][0]
+											+ " Executed successfully with Response  " + resCode + " " + resMsg
+											+ " But was unsuccessful to fetch the response outbound"
+											+ "\n ****************************************************************** \n");
+								}
+								
 							} else {
 								XpathTest.setCellValue(i, 7, resCode + "", props.getProperty("xPathXml"));
 								XpathTest.setCellValue(i, 9, resMsg + "", props.getProperty("xPathXml"));
@@ -168,8 +186,8 @@ public class XmlParser {
 								System.out.println(" * Test Case " + keyValue[i][0] + " failed with Response " + resCode
 										+ " " + resMsg
 										+ "\n ****************************************************************** \n");
-								logger.info(" * Test Case " + keyValue[i][0] + " failed with Response " + resCode
-										+ " " + resMsg
+								logger.info(" * Test Case " + keyValue[i][0] + " failed with Response " + resCode + " "
+										+ resMsg
 										+ "\n ****************************************************************** \n");
 							}
 
@@ -210,7 +228,7 @@ public class XmlParser {
 
 //				XpathTest.setCellValue(1, 4, ranStr, props.getProperty("modifyXmlSheet")); // to update uniqueId to modify sheet
 //				XpathTest.setCellValue(1, 4, ranStr, props.getProperty("cancelXmlSheet")); // to update uniqueId to cancel sheet
-				
+
 				HashMap<Integer, String> response = sendReqObj.getResponse(props.getProperty("soapUrl"),
 						(props.getProperty("tempActualXml") + "testCase_" + "SingleXml" + ".xml"),
 						(props.getProperty("responseXml") + "testResponse_" + "SingleXml" + ".xml"), "POST", fileType);
@@ -260,23 +278,24 @@ public class XmlParser {
 				while ((line = br.readLine()) != null) {
 					String[] words = line.split(" ");
 
-					// ---------------------*** Fetching Prefix and namespaceUrl into hashmap ***------------------------
+					// ---------------------*** Fetching Prefix and namespaceUrl into hashmap
+					// ***------------------------
 					for (String w : words) {
 						if (w.length() >= 5) {
 							if (w.substring(0, 5).equalsIgnoreCase("xmlns")) {
-								
+
 								String str[] = w.split("\"");
-							//	System.out.println("Arry Length = "+ str.length);
+								// System.out.println("Arry Length = "+ str.length);
 								String nameUrl = str[1];
 								String prefix = "";
-								try{
+								try {
 									prefix = str[0].split(":|=")[1];
-								}catch(ArrayIndexOutOfBoundsException e){
+								} catch (ArrayIndexOutOfBoundsException e) {
 									prefix = "@noPrefix";
 								}
-								//System.out.println("Prefix = "+prefix+" NameUrl = "+ nameUrl);
+								// System.out.println("Prefix = "+prefix+" NameUrl = "+ nameUrl);
 								namespace.put(prefix, nameUrl);
-								
+
 							}
 						}
 					}
@@ -299,7 +318,8 @@ public class XmlParser {
 			String outputFilePath) throws Exception {
 		try {
 
-			// ------------------------***Setting NodeList to update xml***--------------------------------------
+			// ------------------------***Setting NodeList to update
+			// xml***--------------------------------------
 
 			NodeList myNodeList = new NodeList() {
 				@Override
@@ -316,15 +336,15 @@ public class XmlParser {
 			};
 			if (!newValue.isEmpty())
 				myNodeList = (NodeList) xpath.compile(xPath).evaluate(doc, XPathConstants.NODESET);
-			//System.out.println(xPath);
+			// System.out.println(xPath);
 			for (int i = 0; i < myNodeList.getLength(); i++) {
 				myNodeList.item(i).setNodeValue(newValue);
 			}
 
-			// ------------------------***Xpath to fetch data from/ xml***--------------------------------------
-
-			// XPathExpression expr = xpath.compile(xPath);
-			// name = expr.evaluate(doc, XPathConstants.STRING).toString();
+			// ------------------------***Xpath to fetch data from xml***--------------------------------------
+			String name;
+			 XPathExpression expr = xpath.compile(xPath);
+			 name = expr.evaluate(doc, XPathConstants.STRING).toString();
 
 			Transformer xformer = TransformerFactory.newInstance().newTransformer();
 			xformer.transform(new DOMSource(doc), new StreamResult(new File(outputFilePath)));
@@ -336,4 +356,45 @@ public class XmlParser {
 		}
 
 	}
+	
+	
+	private static String getXpathResponse(Document doc, XPath xpath, String xPath) throws Exception {
+		String response = "";
+		try {
+
+			// ------------------------***Setting NodeList to update xml***-------------------
+
+			NodeList myNodeList = new NodeList() {
+				@Override
+				public Node item(int index) {
+					// TODO Auto-generated method stub
+					return null;
+				}
+
+				@Override
+				public int getLength() {
+					// TODO Auto-generated method stub
+					return 0;
+				}
+			};
+			myNodeList = (NodeList) xpath.compile(xPath).evaluate(doc, XPathConstants.NODESET);
+			// System.out.println(xPath);
+			
+			// ------------------------***Xpath to fetch data from xml***--------------------------------------
+			
+			 XPathExpression expr = xpath.compile(xPath);
+			 response = expr.evaluate(doc, XPathConstants.STRING).toString();
+
+			
+
+		} catch (XPathExpressionException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+
+	}
+	
+	
 }

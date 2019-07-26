@@ -1,4 +1,6 @@
 package com.auto.iwat;
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -13,7 +15,7 @@ import org.apache.http.impl.io.SocketOutputBuffer;
 
 
 /**
- * @author Indroneel Sengupta 
+ * @author Indroneel Sengupta & Ketan Tank
  * {@code This is the main class of the application	}
 */
 public class iWATEngine {
@@ -21,8 +23,6 @@ public class iWATEngine {
 	static String configPath;
 
 	public static void main(String args[]) throws Exception {
-//		Class c = Class.forName("iWATEngine");
-//		System.out.println("PathName = "+c.getName()+"Package = "+c.getPackage());
 		String path = args[0];
 		configPath = path;
 		Properties props = PropertyFile.propertyFile();
@@ -50,8 +50,10 @@ public class iWATEngine {
 			System.out.println("It seems you have entered an invalid choice, Please Enter a valid choice");
 		}
 		
+			
 		}
-		
+		File htmlFile = new File("ReportGeneration.html");
+		Desktop.getDesktop().browse(htmlFile.toURI());
 		 
 
 	}

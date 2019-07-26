@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -64,6 +65,7 @@ public class JsonParser {
 	 * @throws Exception
 	 */
 	public void jsonParser() throws Exception {
+		
 		Properties props = PropertyFile.propertyFile();
 		Properties mandatoryProp = PropertyFile.jsonMandatoryPropFile();
 		XpathTest xPathTestObj = new XpathTest();
@@ -90,11 +92,16 @@ public class JsonParser {
 		String responseContent = null;
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		boolean resFlag = false;
+		HashMap<Integer, String> logPathForHtmlLink = new HashMap<>();
+		
+		List<ExcelSetter> excelSetterList = new ArrayList<ExcelSetter>();
+		ExcelSetter eList = null;
+		
 
 		switch (select) {
 		case 1: {
 
-			try {
+			//try {
 				for (int i = 0; i < rowCount; i++) {
 					Timestamp startTime = new Timestamp(System.currentTimeMillis());
 					cnt = 1;
@@ -106,8 +113,9 @@ public class JsonParser {
 							if (keyValue[i][3 + 3] != null && keyValue[i][4 + 3] != null) {
 								if (keyValue[i][3 + 3].equalsIgnoreCase("Yes")) {
 									
-									String logPath = (props.getProperty("logFileJson") + "TC_" + keyValue[i][0] +"_"+startTime.toGMTString().replace(':', '-')
+									String logPath = (props.getProperty("logFileJson") + "TC_" + keyValue[i][0] +"_"+startTime.toGMTString().replace(':', '-').replace(' ', '_')
 											+ ".log");
+									logPathForHtmlLink.put(i, logPath);
 									Logger logger = WriteLogEntriesToLogFile.WriteLogEntriesToLogFile(logPath, i);
 									if (flag) {
 										System.out.println("\n  Connecting to server, please wait......... \n");
@@ -147,7 +155,7 @@ public class JsonParser {
 												FileSystem system = FileSystems.getDefault();
 												Path original = system.getPath(keyValue[i][3]);
 												Path target = system.getPath(props.getProperty("tempMandatoryJson"));
-												CopyOption replace;
+												//CopyOption replace;
 												Files.copy(original, target, REPLACE_EXISTING);
 
 											}
@@ -178,17 +186,7 @@ public class JsonParser {
 											
 											
 											data = csvAllRows.get(rowIterator)[colIterator];
-											
-											
-//											resFlag = false;
-//											String jPathSplitter1[] = keyValue[i][8+3].split(",");
-//											checkResponse = getJsonPathResult(
-//													props.getProperty("responseJsonFilePath") + "testResponse_"
-//															+ keyValue[i][0] + "_" + (rowIterator + 1) + ".json",
-//															jPathSplitter1[colIterator]);
-//											if(data.equalsIgnoreCase(checkResponse) || checkResponse.equals("\"" + data + "\"")) {
-//												resFlag = true;
-//											}									
+								
 
 										}
 
@@ -230,7 +228,11 @@ public class JsonParser {
 												props.getProperty("responseJsonFilePath") + "testResponse_"
 														+ keyValue[i][0] + "_" + (rowIterator + 1) + ".json",
 												Charset.defaultCharset());
-
+//									}catch (Exception e) {
+//										e.getStackTrace();
+//										System.out.println(" * Found Exception = " + e.getMessage());
+//										System.out.println(" **********************End Of Execution****************************** \n");
+//									}
 										logger.info("\n\n\t\tFind the Response Below\n" + responseContent + "\n\n");
 										if ((resCode).equalsIgnoreCase(keyValue[i][6 + 3].toString())) {
 //											checkResponse = getJsonPathResult(
@@ -242,22 +244,29 @@ public class JsonParser {
 													props.getProperty("outputJsonFilePath") + "testCase_"
 															+ keyValue[i][0] + "_" + (rowIterator + 1) + ".json",
 													props.getProperty("responseJsonFilePath") + "testResponse_"
-															+ keyValue[i][0] + "_" + (rowIterator + 1) + ".json", rowIterator);
+															+ keyValue[i][0] + "_" + (rowIterator + 1) + ".json", rowIterator,logger);
 											//System.out.println("Response Flag = "+ resFlag);
 											
 											if (resFlag) {
-												XpathTest.setCellValue(i, 7 + 3, resCode,
-														props.getProperty("jPathExcel"));
+												eList = new ExcelSetter(i,10,resCode);
+												excelSetterList.add(eList);
+//												XpathTest.setCellValue(i, 7 + 3, resCode,
+//														props.getProperty("jPathExcel"));
 												Timestamp endTime = new Timestamp(System.currentTimeMillis());
 											    long milliseconds = endTime.getTime() - startTime.getTime();
 											    float seconds = (float) milliseconds / 1000;
 											    
 											    String executionTime = Float.toString(seconds);
+											    
+											    eList = new ExcelSetter(i,16,executionTime);
+												excelSetterList.add(eList);												
+//												XpathTest.setCellValue(i, 16, executionTime,
+//														props.getProperty("jPathExcel"));
 												
-												XpathTest.setCellValue(i, 16, executionTime,
-														props.getProperty("jPathExcel"));
-												XpathTest.setCellValue(i, 10 + 3, "Pass",
-														props.getProperty("jPathExcel"));
+												eList = new ExcelSetter(i,13,"Pass");
+												excelSetterList.add(eList);		
+//												XpathTest.setCellValue(i, 10 + 3, "Pass",
+//														props.getProperty("jPathExcel"));
 												//System.out.println(" * Response Data = " + checkResponse);
 												System.out.println(" * Test case " + keyValue[i][0] + "_"
 														+ (rowIterator + 1)
@@ -269,12 +278,21 @@ public class JsonParser {
 														+ " And Successful Response outbound fetched " + resMsg
 														+ "\n ****************************************************************** \n");
 											} else {
-												XpathTest.setCellValue(i, 7 + 3, resCode,
-														props.getProperty("jPathExcel"));
-												XpathTest.setCellValue(i, 9 + 3, checkResponse,
-														props.getProperty("jPathExcel"));
-												XpathTest.setCellValue(i, 10 + 3, "Fail",
-														props.getProperty("jPathExcel"));
+												
+												eList = new ExcelSetter(i,10,resCode);
+												excelSetterList.add(eList);	
+//												XpathTest.setCellValue(i, 7 + 3, resCode,
+//														props.getProperty("jPathExcel"));
+												
+
+//												XpathTest.setCellValue(i, 9 + 3, checkResponse,
+//														props.getProperty("jPathExcel"));
+												
+												eList = new ExcelSetter(i,13,"Fail");
+												excelSetterList.add(eList);	
+//												XpathTest.setCellValue(i, 10 + 3, "Fail",
+//														props.getProperty("jPathExcel"));
+												
 												System.out.println(" * Test case " + keyValue[i][0] + "_"
 														+ (rowIterator + 1)
 														+ " Executed successfully with Http Response  " + resCode
@@ -287,9 +305,15 @@ public class JsonParser {
 											}
 
 										} else {
-											XpathTest.setCellValue(i, 7 + 3, resCode + "",
-													props.getProperty("jPathExcel"));
-											XpathTest.setCellValue(i, 10 + 3, "Fail", props.getProperty("jPathExcel"));
+											
+											eList = new ExcelSetter(i,10,resCode + "");
+											excelSetterList.add(eList);	
+//											XpathTest.setCellValue(i, 7 + 3, resCode + "",
+//													props.getProperty("jPathExcel"));
+											
+											eList = new ExcelSetter(i, 10 + 3, "Fail");
+											excelSetterList.add(eList);
+											//XpathTest.setCellValue(i, 10 + 3, "Fail", props.getProperty("jPathExcel"));
 											System.out.println(" * Test Case " + keyValue[i][0] + "_"
 													+ (rowIterator + 1) + " failed with Response " + resCode + " "
 													+ resMsg
@@ -316,8 +340,10 @@ public class JsonParser {
 							int subTestCaseCnt = 0;
 							String headerParameter[];
 							if (keyValue[i][3 + 3].equalsIgnoreCase("Yes")) {
-								String logPath = (props.getProperty("logFileJson") + "TC_" + keyValue[i][0] +"_"+startTime.toLocaleString().replace(':', '-')
+								String logPath = (props.getProperty("logFileJson") + "TC_" + keyValue[i][0] +"_"+startTime.toLocaleString().replace(':', '-').replace(' ', '_')
 								+ ".log");
+								
+								logPathForHtmlLink.put(i, logPath);
 								Logger logger = WriteLogEntriesToLogFile.WriteLogEntriesToLogFile(logPath, i);
 								if (flag) {
 									System.out.println("\n  Connecting to server, please wait......... \n");
@@ -366,32 +392,7 @@ public class JsonParser {
 										writer.writeValue(new File(props.getProperty("responseJsonFilePath")
 												+ "testResponse_" + keyValue[i][0] + "_" + subTestCaseCnt + ".json"), json);
 									}
-									
-
-
-
-//									Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//									JsonParser jp = new JsonParser();
-//									JsonElement je = jp.parse(jsonResponseStr);																
-//								    String prettyJsonString = gson.toJson(je);
-									
-//									Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//									String jsonOutput = gson.toJson(jsonResponseStr);
-//									String prettyJson = toPrettyFormat(jsonOutput);
-//									System.out.println(prettyJson);
-									
-									
-//								      JsonParser parser = new JsonParser();
-//								      JsonObject json = parser.parse(jsonResponseStr).getAsJsonObject();
-//
-//								      Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//								      String prettyJson = gson.toJson(json);
-//									
-									
-									
-									
-									
-									
+					
 									responseContent = readFile(props.getProperty("responseJsonFilePath")
 											+ "testResponse_" + keyValue[i][0] + "_" + subTestCaseCnt + ".json",
 											Charset.defaultCharset());
@@ -406,11 +407,18 @@ public class JsonParser {
 									    
 									    String executionTime = Float.toString(seconds);
 										
-										XpathTest.setCellValue(i, 16, executionTime,
-												props.getProperty("jPathExcel"));
+									    eList = new ExcelSetter(i, 16, executionTime);
+										excelSetterList.add(eList);
+//										XpathTest.setCellValue(i, 16, executionTime,
+//												props.getProperty("jPathExcel"));
 
-										XpathTest.setCellValue(i, 7 + 3, resCode, props.getProperty("jPathExcel"));
-										XpathTest.setCellValue(i, 10 + 3, "Pass", props.getProperty("jPathExcel"));
+										eList = new ExcelSetter(i, 7 + 3, resCode);
+										excelSetterList.add(eList);
+										//XpathTest.setCellValue(i, 7 + 3, resCode, props.getProperty("jPathExcel"));
+										
+										eList = new ExcelSetter(i, 10 + 3, "Pass");
+										excelSetterList.add(eList);
+										//XpathTest.setCellValue(i, 10 + 3, "Pass", props.getProperty("jPathExcel"));
 										System.out.println(" * Test case " + keyValue[i][0] + "_" + subTestCaseCnt
 												+ " Executed successfully with Http Response  " + resCode
 												+ "\n ****************************************************************** \n");
@@ -420,8 +428,13 @@ public class JsonParser {
 												+ "\n ****************************************************************** \n");
 
 									} else {
+										eList = new ExcelSetter(i, 7 + 3, resCode + "");
+										excelSetterList.add(eList);
 										XpathTest.setCellValue(i, 7 + 3, resCode + "", props.getProperty("jPathExcel"));
-										XpathTest.setCellValue(i, 10 + 3, "Fail", props.getProperty("jPathExcel"));
+										
+										eList = new ExcelSetter(i, 10 + 3, "Fail");
+										excelSetterList.add(eList);
+										//XpathTest.setCellValue(i, 10 + 3, "Fail", props.getProperty("jPathExcel"));
 										System.out.println(" * Test Case " + keyValue[i][0] + "_" + subTestCaseCnt
 												+ " failed with Response " + resCode + " " + resMsg
 												+ "\n ****************************************************************** \n");
@@ -443,15 +456,23 @@ public class JsonParser {
 						break;
 					}
 				}
-			} catch (com.jayway.jsonpath.PathNotFoundException pathNotFound) {
-				pathNotFound.getStackTrace();
-				System.out.println(" * Found Exception = "+" com.jayway.jsonpath.PathNotFoundException :: " + pathNotFound.getMessage());
-				System.out.println(" **********************End Of Execution****************************** \n");
-			} catch (Exception e) {
-				e.getStackTrace();
-				System.out.println(" * Found Exception = " + e.getMessage());
-				System.out.println(" **********************End Of Execution****************************** \n");
-			}
+				for (int i=0; i < excelSetterList.size(); i++)
+				{
+					XpathTest.setCellValue(excelSetterList.get(i).row,excelSetterList.get(i).column,excelSetterList.get(i).cellValue,
+							props.getProperty("jPathExcel"));
+//				    System.out.println(excelSetterList.get(i).row);
+//				    System.out.println(excelSetterList.get(i).column);
+//				    System.out.println(excelSetterList.get(i).cellValue);
+				}
+				String[][] keyValueLatest = xPathTestObj.getPath(props.getProperty("jPathExcel"));
+				Excel2Html e2html = new Excel2Html();
+				e2html.saveHtml(keyValueLatest, logPathForHtmlLink);
+				
+//			}catch (Exception e) {
+//				e.getStackTrace();
+//				System.out.println(" * Found Exception = " + e.getMessage());
+//				System.out.println(" **********************End Of Execution****************************** \n");
+//			}
 			break;
 		}
 
@@ -483,21 +504,38 @@ public class JsonParser {
 
 	public void setJsonPathResult(String oriJsonFilePath, String outputJsonFilePath, String jsonPath, Object data)
 			throws Exception {
-		File f1 = new File(oriJsonFilePath);
-		ObjectNode jsonContext =  JsonPath.using(configuration).parse(f1).set(jsonPath, data).json();
 		
+		try {
+			File f1 = new File(oriJsonFilePath);
+			ObjectNode jsonContext = JsonPath.using(configuration).parse(f1).set(jsonPath, data).json();
+
 //		JsonNode jsonNode = JsonPath.using(configuration).parse(f1).set(jsonPath, data).json();
 //		ObjectNode jsonContext = (ObjectNode) jsonNode.deepCopy();
-		
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
-		writer.writeValue(new File(outputJsonFilePath), jsonContext);
+
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+			writer.writeValue(new File(outputJsonFilePath), jsonContext);
+		} catch (com.jayway.jsonpath.PathNotFoundException pathNotFound) {
+			pathNotFound.getStackTrace();
+			System.out.println(" * Found Exception = " + " com.jayway.jsonpath.PathNotFoundException :: "
+					+ pathNotFound.getMessage());
+			System.out.println(" **********************End Of Execution****************************** \n");
+		}
 
 	}
 
 	public static String getJsonPathResult(String oriJsonFilePath, String jsonPath) throws Exception {
-		File f1 = new File(oriJsonFilePath);
-		String jsonContext = JsonPath.using(configuration).parse(f1).read(jsonPath).toString();
+		String jsonContext = "";
+		try {
+			File f1 = new File(oriJsonFilePath);
+			jsonContext = JsonPath.using(configuration).parse(f1).read(jsonPath).toString();
+			
+		} catch (com.jayway.jsonpath.PathNotFoundException pathNotFound) {
+			pathNotFound.getStackTrace();
+			System.out.println(" * Found Exception = " + " com.jayway.jsonpath.PathNotFoundException :: "
+					+ pathNotFound.getMessage());
+			System.out.println(" **********************End Of Execution****************************** \n");
+		}
 		return jsonContext;
 
 	}
