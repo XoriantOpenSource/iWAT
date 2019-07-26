@@ -1,6 +1,6 @@
 ﻿# README
 
-**iWAT** (Intelligent Webservice Automation Tool) Open Source 1.0 release
+**iWAT** (Intelligent Webservice Automation Tool) Open Source 1.2 release
 
 
 | License:  |Apache License 2.0 |
@@ -13,26 +13,20 @@ iWAT is an Open source tool to automate web services test cases for SOAP and RES
 To begin with iWAT, first, download and configure the iWAT application on your computer, write your test case in the spreadsheet and place it in the directory to run.
 To Run the tests you need to first install and configure the tool correctly. Please find installation and configuration instruction as follows.
 
-## What's New in build 1.0:
+## What's New in version 1.2:
 
- 1. GET,POST, PUT and DELETE menthods are supported
+ 1. GET, POST, PUT and DELETE methods are supported
  2. Support for XPath and JSON path expressions
  3. Test cases and Test suites uses excel format for better handling.
  4. Additional request headers
  5. Basic authentication
+ 6. OAuth-2 support enabled.
+ 7. Complex path queries for JSON and XML (simple tests on fields)
+ 8. Detailed Html Report Generation after execution.
+ 9. Multiple test cases with multiple data sets are now supported.
 
 
-## Status:
-
- 1. No support for HTTP methods like HEAD, OPTIONS
- 2. No support for Cookie-based authentication
- 3. No OAuth support yet for soap.
- 4. Currently only SOAP 1.2 is supported.
- 5. Parallel execution of tests 
- 6. Complex path queries for JSON and XML (simple tests on fields)
- 7. Full support for multipart/form-data
- 8. Support for XPath and JsonPath expressions
- 9. Html Report Generation
+ 
  
 ## Prerequisite:
 
